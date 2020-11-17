@@ -11,6 +11,5 @@ yarn-error.log*
 .env
 
 # Subgraph
-/subgraph/subgraph.yaml
 /subgraph/generated/
 /subgraph/build
