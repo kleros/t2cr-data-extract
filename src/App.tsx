@@ -1,26 +1,31 @@
-import React from 'react';
-import logo from './logo.svg';
+import React, { FC, useCallback, useEffect, useState } from 'react';
+import { DatePicker } from 'antd';
 import './App.css';
 
-function App() {
+const { RangePicker } = DatePicker;
+
+interface MomentObj {
+  valueOf: Function
+}
+
+const App: FC = () => {
+  const [interval, setInterval] = useState<Number[]>()
+  const onIntervalSelected = useCallback((selection) => {
+    setInterval(selection.map((i: MomentObj) => i.valueOf()))
+  }, [])
+
+  useEffect(() => {
+    ;(async () => {
+      if (!interval) return
+
+    })()
+  }, [interval])
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <RangePicker showTime onChange={onIntervalSelected}/>
     </div>
-  );
-}
+  )
+};
 
 export default App;
