@@ -22,3 +22,8 @@ type Request @entity {
   requester: Bytes!
   resolutionTime: BigInt!
 }
+
+type Token @entity {
+  id: ID!
+  numberOfRequests: BigInt!
+}
