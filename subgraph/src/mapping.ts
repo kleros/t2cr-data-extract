@@ -1,5 +1,5 @@
 import { log, BigInt } from "@graphprotocol/graph-ts";
-import { ArbitrableTokenList, RequestSubmitted, TokenStatusChange } from "../generated/ArbitrableTokenList/ArbitrableTokenList";
+import { RequestSubmitted, TokenStatusChange } from "../generated/ArbitrableTokenList/ArbitrableTokenList";
 import { Request, Token } from "../generated/schema";
 
 
@@ -36,29 +36,37 @@ export function handleRequestSubmitted(event: RequestSubmitted): void {
 }
 
 export function handleTokenStatusChange(event: TokenStatusChange): void {
-  if (event.params._status !== 0 || event.params._status !== 1) {
+  if (event.params._status !== 0 && event.params._status !== 1) {
     return // Request not yet resolved. Noop.
   }
 
-  let tcr = ArbitrableTokenList.bind(event.address)
-  let tokenInfo = tcr.getTokenInfo(event.params._tokenID)
-  let numberOfRequests = tokenInfo.value5
-  let id = event.params._tokenID.toHexString()+'-'+numberOfRequests.toString()
+  let token = Token.load(event.params._tokenID.toHexString())
+  if (token == null) {
+    log.error('T2CR: token {} not found. Bailing handleTokenStatusChange.',[event.params._tokenID.toHexString()])
+    return
+  }
+  let id = event.params._tokenID.toHexString()+'-'+token.numberOfRequests.minus(BigInt.fromI32(1)).toString()
 
   let request = Request.load(id)
   if (request == null) {
     log.error('T2CR: Request {} not found. Bailing handleTokenStatusChange.',[id])
+    return
   }
 
   request.resolutionTime = event.block.timestamp;
   if (request.type === REGISTRATION) {
-    if (event.params._status === 0) request.result = REJECTED
-    else request.result = ACCEPTED
+    if (event.params._status === 0) {
+      request.result = REJECTED
+    } else {
+      request.result = ACCEPTED
+    }
   } else {
-    if (event.params._status === 0) request.result = ACCEPTED
-    else request.result = REJECTED
+    if (event.params._status === 0) {
+      request.result = ACCEPTED
+    } else {
+      request.result = REJECTED
+    }
   }
-
 
   request.save()
 }
