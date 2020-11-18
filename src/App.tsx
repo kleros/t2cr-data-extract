@@ -52,8 +52,8 @@ const Requests: FC<RequestProps> = ({ interval = [0, 0] }) => {
           }}
           key={i.toString()}
         >
-          <a href={`https://token.kleros.io/token/${request.id}`}>
-            Token ID: {request.id}
+          <a href={`https://token.kleros.io/token/${request.id.slice(0, request.id.indexOf('-'))}`}>
+            Token ID: {request.id.slice(0, request.id.indexOf('-'))}
           </a>
           <p>Submission time: {new Date(Number(request.timestamp) * 1000).toString()}</p>
           <p>Request type: {request.type}</p>
