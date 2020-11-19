@@ -12,7 +12,6 @@ const REMOVAL = 'Removal'
 
 export function handleRequestSubmitted(event: RequestSubmitted): void {
   let token = Token.load(event.params._tokenID.toHexString())
-  let numberOfRequests = BigInt.fromI32(1)
   if (token == null) {
     token = new Token(event.params._tokenID.toHexString())
     token.numberOfRequests = BigInt.fromI32(1)
@@ -21,7 +20,7 @@ export function handleRequestSubmitted(event: RequestSubmitted): void {
   }
   token.save()
 
-  let id = event.params._tokenID.toHexString()+'-'+numberOfRequests.minus(BigInt.fromI32(1)).toString()
+  let id = event.params._tokenID.toHexString()+'-'+token.numberOfRequests.minus(BigInt.fromI32(1)).toString()
   let request = new Request(id)
 
   request.timestamp = event.block.timestamp
