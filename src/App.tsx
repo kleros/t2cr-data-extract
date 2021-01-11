@@ -56,7 +56,7 @@ const queryByResolutionTime = gql`
       }
     ) {
       id
-      resolutionTime
+      timestamp
       type
       requester
       resolutionTime
@@ -98,8 +98,8 @@ const Requests: FC<RequestProps> = ({ interval = [0, 0], option = 1 }) => {
               Token ID: {request.id.slice(0, request.id.indexOf("-"))}
             </a>
             <p>
-              Submission time:{" "}
-              {new Date(Number(request.timestamp) * 1000).toString()}
+              Submission time:
+              {new Date(Number(request.timestamp) * 1000).toUTCString()}
             </p>
             <p>Request type: {request.type}</p>
             <p>
@@ -110,7 +110,7 @@ const Requests: FC<RequestProps> = ({ interval = [0, 0], option = 1 }) => {
             </p>
             <p>
               Resolution Time:{" "}
-              {new Date(Number(request.resolutionTime) * 1000).toString()}
+              {new Date(Number(request.resolutionTime) * 1000).toUTCString()}
             </p>
           </div>
         ))}
@@ -125,8 +125,8 @@ const App: FC = () => {
   const onFilterSelected = useCallback((e) => {
     setFilterBy(e.target.value || 1);
   }, []);
-  const onIntervalSelected = useCallback((selectedDates, selectedStrings) => {
-    console.info(selectedStrings);
+  const onIntervalSelected = useCallback((selectedDates) => {
+    if (!selectedDates) return;
     setInterval(
       selectedDates.map((i: MomentObj) => Math.floor(i.valueOf() / 1000))
     );
