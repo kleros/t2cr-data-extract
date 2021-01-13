@@ -22,7 +22,7 @@ interface RequestProps {
 
 interface Request {
   id: string;
-  timestamp: string;
+  submissionTime: string;
   type: string;
   requester: string;
   resolutionTime: string;
@@ -32,13 +32,13 @@ const queryBySubmissionTime = gql`
   query GetRequests($startTime: Int!, $endTime: Int!) {
     requests(
       where: {
-        timestamp_gte: $startTime
-        timestamp_lte: $endTime
+        submissionTime_gte: $startTime
+        submissionTime_lte: $endTime
         result: "Accepted"
       }
     ) {
       id
-      timestamp
+      submissionTime
       type
       requester
       resolutionTime
@@ -56,7 +56,7 @@ const queryByResolutionTime = gql`
       }
     ) {
       id
-      timestamp
+      submissionTime
       type
       requester
       resolutionTime
@@ -99,9 +99,14 @@ const Requests: FC<RequestProps> = ({ interval = [0, 0], option = 1 }) => {
             </a>
             <p>
               Submission time:
-              {new Date(Number(request.timestamp) * 1000).toUTCString()}
+              {new Date(Number(request.submissionTime) * 1000).toUTCString()}
             </p>
-            <p>Request type: {request.type}</p>
+            <p>
+              Request type:{" "}
+              {request.type === "RegistrationRequested"
+                ? "Registration"
+                : "Removal"}
+            </p>
             <p>
               Requester:{" "}
               <a href={`https://etherscan.io/address/${request.requester}`}>
@@ -135,8 +140,7 @@ const App: FC = () => {
   const client = useMemo(
     () =>
       new ApolloClient({
-        uri:
-          "https://api.thegraph.com/subgraphs/name/mtsalenc/t2cr-data-extract",
+        uri: "https://api.thegraph.com/subgraphs/name/kleros/t2cr",
         cache: new InMemoryCache(),
       }),
     []
