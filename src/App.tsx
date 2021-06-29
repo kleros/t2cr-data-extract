@@ -26,10 +26,11 @@ interface Request {
   type: string;
   requester: string;
   resolutionTime: string;
+  resolutionTx: string;
 }
 
 const queryBySubmissionTime = gql`
-  query GetRequests($startTime: Int!, $endTime: Int!) {
+  query GetRequestsBySubmissionTime($startTime: Int!, $endTime: Int!) {
     requests(
       where: {
         submissionTime_gte: $startTime
@@ -42,12 +43,13 @@ const queryBySubmissionTime = gql`
       type
       requester
       resolutionTime
+      resolutionTx
     }
   }
 `;
 
 const queryByResolutionTime = gql`
-  query GetRequests($startTime: Int!, $endTime: Int!) {
+  query GetRequestsByResolutionTime($startTime: Int!, $endTime: Int!) {
     requests(
       where: {
         resolutionTime_gte: $startTime
@@ -60,6 +62,7 @@ const queryByResolutionTime = gql`
       type
       requester
       resolutionTime
+      resolutionTx
     }
   }
 `;
@@ -117,6 +120,13 @@ const Requests: FC<RequestProps> = ({ interval = [0, 0], option = 1 }) => {
               Resolution Time:{" "}
               {new Date(Number(request.resolutionTime) * 1000).toUTCString()}
             </p>
+            {request.resolutionTx && (
+              <p>
+                <a href={`https://etherscan.io/tx/${request.resolutionTx}`}>
+                  Resolution Tx
+                </a>
+              </p>
+            )}
           </div>
         ))}
     </div>
